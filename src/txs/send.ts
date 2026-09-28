@@ -45,7 +45,14 @@ export const sendTokens: TxBuilder = {
     const to = input(el, "#send-to");
 
     getBalances(ctx.wallet.address).then((coins) => {
-      balances = coins.filter((c) => BigInt(c.amount) > 0n);
+      balances = coins
+        .filter((c) => BigInt(c.amount) > 0n)
+        .sort((a, b) =>
+          assetInfo(a.denom).symbol.localeCompare(assetInfo(b.denom).symbol, "en", {
+            sensitivity: "base",
+            numeric: true,
+          })
+        );
       denomSel.innerHTML = balances.length
         ? balances
             .map((c) => `<option value="${esc(c.denom)}">${esc(formatCoin(c.amount, c.denom))}</option>`)
